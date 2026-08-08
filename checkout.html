@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout - ShopEasy</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>💳 Checkout</h1>
+
+<form id="checkoutForm">
+
+<input type="text" id="name" placeholder="Full Name" required>
+
+<input type="tel" id="phone" placeholder="Mobile Number" required>
+
+<textarea id="address" placeholder="Full Address" required></textarea>
+
+<input type="text" id="city" placeholder="City" required>
+
+<input type="number" id="pincode" placeholder="Pincode" required>
+
+<select id="payment" required>
+<option value="">Select Payment Method</option>
+<option>Cash on Delivery</option>
+<option>UPI</option>
+</select>
+
+<button type="submit">Place Order</button>
+
+</form>
+
+</div>
+
+<script type="module" src="checkout.js"></script>
+
+</body>
+</html>
