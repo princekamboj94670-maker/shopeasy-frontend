@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order Success</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container" style="text-align:center; margin-top:80px;">
+
+<h1>🎉 Order Placed Successfully!</h1>
+
+<p id="customer"></p>
+
+<p id="paymentMethod"></p>
+
+<br>
+
+<a href="index.html">
+<button>🛍️ Back To Home</button>
+</a>
+
+</div>
+
+<script>
+
+let order = JSON.parse(localStorage.getItem("order"));
+
+if(order){
+
+document.getElementById("customer").innerHTML =
+"<b>Name:</b> " + order.name;
+
+document.getElementById("paymentMethod").innerHTML =
+"<b>Payment:</b> " + order.payment;
+
+}
+
+</script>
+
+</body>
+</html>
