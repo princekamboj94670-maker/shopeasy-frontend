@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShopEasy</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🛍️ ShopEasy</h1>
+<button onclick="openAdmin()">👨‍💼 Admin Panel</button>
+
+<button onclick="openAdminProducts()">📦 Admin Products</button>
+<div style="margin-bottom:20px;">
+
+<a href="login.html">
+<button>🔑 Login</button>
+</a>
+
+<a href="signup.html">
+<button>👤 Signup</button>
+</a>
+<a href="profile.html">
+<button>👤 My Profile</button>
+</a>
+
+</div>
+
+<input type="text" id="search" placeholder="🔍 Search Products...">
+<a href="wishlist.html">
+    <button>❤️ Wishlist</button>
+    <a href="profile.html">
+    <button>👤 My Profile</button>
+</a>
+<a href="orders.html">
+    <button>📦 My Orders</button>
+</a>
+</a>
+
+<select id="category">
+<option value="all">All Categories</option>
+<option value="Shoes">Shoes</option>
+<option value="Shirt">Shirt</option>
+<option value="Watch">Watch</option>
+</select>
+
+<div id="products"></div>
+
+<h2>🛒 Shopping Cart</h2>
+
+<div id="cart"></div>
+
+<h3 id="total">Total : ₹0</h3>
+<a href="checkout.html">
+    <button>Proceed to Checkout</button>
+</a>
+
+</div>
+
+<script type="module" src="script.js"></script>
+
+</body>
+</html>
