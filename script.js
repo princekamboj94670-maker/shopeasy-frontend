@@ -1,4 +1,15 @@
 import { db } from "./firebase.js";
+
+import {
+    collection,
+    getDocs
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+
+// ===============================
+// BACKEND CONNECTION
+// ===============================
+
 const API_URL = "https://shopeasy-backend-2o2i.onrender.com";
 
 async function testBackend() {
@@ -7,6 +18,7 @@ async function testBackend() {
         const data = await response.json();
 
         console.log("✅ Backend Connected:", data);
+
     } catch (error) {
         console.error("❌ Backend Connection Failed:", error);
     }
@@ -14,42 +26,61 @@ async function testBackend() {
 
 testBackend();
 
-import {
-  collection,
-  getDocs
-} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
-// Products
+// ===============================
+// PRODUCTS
+// ===============================
+
 let products = [];
 
-// Local Storage
+
+// ===============================
+// LOCAL STORAGE
+// ===============================
+
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
 
-// HTML Elements
+
+// ===============================
+// HTML ELEMENTS
+// ===============================
+
 const productsDiv = document.getElementById("products");
 const cartDiv = document.getElementById("cart");
 const totalDiv = document.getElementById("total");
 const search = document.getElementById("search");
 const category = document.getElementById("category");
 
-// Save Cart
-function saveCart(){
+
+// ===============================
+// SAVE CART
+// ===============================
+
+function saveCart() {
     localStorage.setItem("cart", JSON.stringify(cart));
 }
 
-// Load Products From Firebase
-async function loadProducts(){
+
+// ===============================
+// LOAD PRODUCTS FROM FIREBASE
+// ===============================
+
+async function loadProducts() {
+
+    if (!productsDiv) return;
 
     productsDiv.innerHTML = "<h2>Loading Products...</h2>";
 
-    try{
+    try {
 
-        const snapshot = await getDocs(collection(db,"products"));
+        const snapshot = await getDocs(
+            collection(db, "products")
+        );
 
         products = [];
 
-        snapshot.forEach((productDoc)=>{
+        snapshot.forEach((productDoc) => {
 
             products.push({
                 id: productDoc.id,
@@ -60,44 +91,61 @@ async function loadProducts(){
 
         displayProducts(products);
 
-    }catch(error){
+    } catch (error) {
 
-        productsDiv.innerHTML = "<h2>Error Loading Products</h2>";
+        productsDiv.innerHTML =
+            "<h2>Error Loading Products</h2>";
 
-        console.log(error);
+        console.error("Firebase Error:", error);
 
     }
-
 }
 
-// Display Products
-function displayProducts(productList){
+
+// ===============================
+// DISPLAY PRODUCTS
+// ===============================
+
+function displayProducts(productList) {
+
+    if (!productsDiv) return;
 
     productsDiv.innerHTML = "";
 
-    productList.forEach(product=>{
+    productList.forEach(product => {
 
         productsDiv.innerHTML += `
 
         <div class="product">
 
-            <img src="${product.image}" onclick="alert('${product.id}'); openProduct('${product.id}')">
+            <img
+                src="${product.image || ""}"
+                onclick="openProduct('${product.id}')"
+            >
 
-            <h3 onclick="alert('${product.id}'); openProduct('${product.id}')">
-            ${product.name}
+            <h3
+                onclick="openProduct('${product.id}')"
+            >
+                ${product.name || "Product"}
             </h3>
 
-            <p>₹${product.price}</p>
+            <p>₹${product.price || 0}</p>
 
-            <p>${product.description || ""}</p>
+            <p>
+                ${product.description || ""}
+            </p>
 
-            <button onclick="addToCart('${product.id}')">
-            🛒 Add To Cart
+            <button
+                onclick="addToCart('${product.id}')"
+            >
+                🛒 Add To Cart
             </button>
 
-            <button class="wishlist-btn"
-            onclick="addToWishlist('${product.id}')">
-            ❤️ Wishlist
+            <button
+                class="wishlist-btn"
+                onclick="addToWishlist('${product.id}')"
+            >
+                ❤️ Wishlist
             </button>
 
         </div>
@@ -105,94 +153,139 @@ function displayProducts(productList){
         `;
 
     });
-
 }
-// Add To Cart
-function addToCart(id){
+
+
+// ===============================
+// ADD TO CART
+// ===============================
+
+function addToCart(id) {
 
     let item = cart.find(p => p.id === id);
 
-    if(item){
+    if (item) {
 
         item.quantity++;
 
-    }else{
+    } else {
 
-        let product = products.find(p => p.id === id);
+        let product = products.find(
+            p => p.id === id
+        );
+
+        if (!product) return;
 
         cart.push({
             ...product,
-            quantity:1
+            quantity: 1
         });
-
     }
 
     saveCart();
-
     displayCart();
-
 }
 
-// Add To Wishlist
-function addToWishlist(id){
 
-    let product = products.find(p => p.id === id);
+// ===============================
+// ADD TO WISHLIST
+// ===============================
 
-    let exist = wishlist.find(p => p.id === id);
+function addToWishlist(id) {
 
-    if(exist){
+    let product = products.find(
+        p => p.id === id
+    );
+
+    if (!product) return;
+
+    let exist = wishlist.find(
+        p => p.id === id
+    );
+
+    if (exist) {
 
         alert("Already in Wishlist ❤️");
-
         return;
 
     }
 
     wishlist.push(product);
 
-    localStorage.setItem("wishlist", JSON.stringify(wishlist));
+    localStorage.setItem(
+        "wishlist",
+        JSON.stringify(wishlist)
+    );
 
-    alert(product.name + " added to Wishlist ❤️");
-
+    alert(
+        product.name +
+        " added to Wishlist ❤️"
+    );
 }
 
-// Display Cart
-function displayCart(){
 
-    if(!cartDiv || !totalDiv) return;
+// ===============================
+// DISPLAY CART
+// ===============================
+
+function displayCart() {
+
+    if (!cartDiv || !totalDiv) return;
 
     cartDiv.innerHTML = "";
 
     let total = 0;
 
-    cart.forEach(item=>{
+    cart.forEach(item => {
 
-        total += item.price * item.quantity;
+        total +=
+            Number(item.price) *
+            Number(item.quantity);
 
         cartDiv.innerHTML += `
 
         <div class="cart-item">
 
-            <img src="${item.image}" width="70">
+            <img
+                src="${item.image || ""}"
+                width="70"
+            >
 
             <div>
 
-                <h3>${item.name}</h3>
+                <h3>
+                    ${item.name}
+                </h3>
 
-                <p>₹${item.price}</p>
+                <p>
+                    ₹${item.price}
+                </p>
 
-                <p>Quantity : ${item.quantity}</p>
+                <p>
+                    Quantity:
+                    ${item.quantity}
+                </p>
 
             </div>
 
             <div class="cart-buttons">
 
-                <button onclick="decreaseQty('${item.id}')">-</button>
+                <button
+                    onclick="decreaseQty('${item.id}')"
+                >
+                    -
+                </button>
 
-                <button onclick="increaseQty('${item.id}')">+</button>
+                <button
+                    onclick="increaseQty('${item.id}')"
+                >
+                    +
+                </button>
 
-                <button onclick="removeItem('${item.id}')">
-                Remove
+                <button
+                    onclick="removeItem('${item.id}')"
+                >
+                    Remove
                 </button>
 
             </div>
@@ -203,34 +296,47 @@ function displayCart(){
 
     });
 
-    totalDiv.innerHTML =  "Total : ₹" + total;
+    totalDiv.innerHTML =
+        "Total : ₹" + total;
 }
-// Increase Quantity
-function increaseQty(id){
 
-    let item = cart.find(p => p.id === id);
 
-    if(item){
+// ===============================
+// INCREASE QUANTITY
+// ===============================
+
+function increaseQty(id) {
+
+    let item = cart.find(
+        p => p.id === id
+    );
+
+    if (item) {
         item.quantity++;
     }
 
     saveCart();
     displayCart();
-
 }
 
-// Decrease Quantity
-function decreaseQty(id){
 
-    let item = cart.find(p => p.id === id);
+// ===============================
+// DECREASE QUANTITY
+// ===============================
 
-    if(!item) return;
+function decreaseQty(id) {
 
-    if(item.quantity > 1){
+    let item = cart.find(
+        p => p.id === id
+    );
+
+    if (!item) return;
+
+    if (item.quantity > 1) {
 
         item.quantity--;
 
-    }else{
+    } else {
 
         removeItem(id);
         return;
@@ -239,176 +345,214 @@ function decreaseQty(id){
 
     saveCart();
     displayCart();
-
 }
 
-// Remove Item
-function removeItem(id){
 
-    cart = cart.filter(item => item.id !== id);
+// ===============================
+// REMOVE ITEM
+// ===============================
 
-    saveCart();
+function removeItem(id) {
 
-    displayCart();
-
-}
-
-// Search Products
-if(search){
-
-search.addEventListener("keyup", function(){
-
-    let text = this.value.toLowerCase();
-
-    let filtered = products.filter(product =>
-
-        product.name.toLowerCase().includes(text)
-
+    cart = cart.filter(
+        item => item.id !== id
     );
 
-    displayProducts(filtered);
-
-});
-
-}
-
-// Category Filter
-if(category){
-
-category.addEventListener("change", function(){
-
-    if(this.value === "all"){
-
-        displayProducts(products);
-
-    }else{
-
-        let filtered = products.filter(product =>
-
-            product.category === this.value
-
-        );
-
-        displayProducts(filtered);
-
-    }
-
-});
-
-}
-// Open Product Details
-function openProduct(id){
-
-    localStorage.setItem("selectedProduct", id);
-
-    window.location.href = "product.html";
-
-}
-
-// Open Admin Dashboard
-function openAdmin(){
-
-    window.location.href = "admin.html";
-
-}
-
-// Open Admin Products
-function openAdminProducts(){
-
-    window.location.href = "admin-products.html";
-
-}
-
-// Logout
-function logout(){
-
-    localStorage.removeItem("loggedIn");
-
-    alert("Logged Out Successfully!");
-
-    window.location.href = "login.html";
-
-}
-
-// Page Load
-window.addEventListener("load", ()=>{
-
-    loadProducts();
-
-    displayCart();
-
-});
-// Refresh Products After Search Clear
-if(search){
-
-search.addEventListener("search", ()=>{
-
-    displayProducts(products);
-
-});
-
-}
-
-// Safe Category Refresh
-function refreshProducts(){
-
-    if(category && category.value !== "all"){
-
-        let filtered = products.filter(product =>
-            product.category === category.value
-        );
-
-        displayProducts(filtered);
-
-    }else{
-
-        displayProducts(products);
-
-    }
-
-}
-
-// Refresh Cart
-function refreshCart(){
-
     saveCart();
-
     displayCart();
+}
+
+
+// ===============================
+// SEARCH
+// ===============================
+
+if (search) {
+
+    search.addEventListener(
+        "keyup",
+        function () {
+
+            let text =
+                this.value.toLowerCase();
+
+            let filtered =
+                products.filter(product =>
+                    (product.name || "")
+                        .toLowerCase()
+                        .includes(text)
+                );
+
+            displayProducts(filtered);
+
+        }
+    );
 
 }
 
-// Reload Products From Firebase
-async function reloadProducts(){
+
+// ===============================
+// CATEGORY FILTER
+// ===============================
+
+if (category) {
+
+    category.addEventListener(
+        "change",
+        function () {
+
+            if (this.value === "all") {
+
+                displayProducts(products);
+
+            } else {
+
+                let filtered =
+                    products.filter(product =>
+                        product.category ===
+                        this.value
+                    );
+
+                displayProducts(filtered);
+
+            }
+
+        }
+    );
+
+}
+
+
+// ===============================
+// OPEN PRODUCT
+// ===============================
+
+function openProduct(id) {
+
+    localStorage.setItem(
+        "selectedProduct",
+        id
+    );
+
+    window.location.href =
+        "product.html";
+}
+
+
+// ===============================
+// ADMIN
+// ===============================
+
+function openAdmin() {
+
+    window.location.href =
+        "admin.html";
+}
+
+
+function openAdminProducts() {
+
+    window.location.href =
+        "admin-products.html";
+}
+
+
+// ===============================
+// LOGOUT
+// ===============================
+
+function logout() {
+
+    localStorage.removeItem(
+        "loggedIn"
+    );
+
+    alert(
+        "Logged Out Successfully!"
+    );
+
+    window.location.href =
+        "login.html";
+}
+
+
+// ===============================
+// RELOAD PRODUCTS
+// ===============================
+
+async function reloadProducts() {
 
     await loadProducts();
 
 }
 
-// Auto Refresh Every 30 Seconds
-setInterval(()=>{
 
-    reloadProducts();
+// ===============================
+// PAGE LOAD
+// ===============================
 
-},30000);
+window.addEventListener(
+    "load",
+    () => {
 
-// App Started
-console.log("✅ ShopEasy Loaded Successfully");
+        loadProducts();
+        displayCart();
 
-// End of File
-    window.openAdmin = function () {
-    window.location.href = "admin.html";
-};
+    }
+);
 
-window.openAdminProducts = function () {
-    window.location.href = "admin-products.html";
-};
-window.openProduct = openProduct;
-window.addToCart = addToCart;
-window.addToWishlist = addToWishlist;
-window.increaseQty = increaseQty;
-window.decreaseQty = decreaseQty;
-window.removeItem = removeItem;
-window.openAdmin = openAdmin;
-window.openAdminProducts = openAdminProducts;
-window.logout = logout;
-  
+
+// ===============================
+// AUTO REFRESH
+// ===============================
+
+setInterval(
+    () => {
+
+        reloadProducts();
+
+    },
+    30000
+);
+
+
+// ===============================
+// MAKE FUNCTIONS AVAILABLE
+// TO HTML ONCLICK
+// ===============================
+
+window.openProduct =
+    openProduct;
+
+window.addToCart =
+    addToCart;
+
+window.addToWishlist =
+    addToWishlist;
+
+window.increaseQty =
+    increaseQty;
+
+window.decreaseQty =
+    decreaseQty;
+
+window.removeItem =
+    removeItem;
+
+window.openAdmin =
+    openAdmin;
+
+window.openAdminProducts =
+    openAdminProducts;
+
+window.logout =
+    logout;
+
+
+// ===============================
+// APP STARTED
+// ===============================
+
+console.log(
+    "✅ ShopEasy Frontend Loaded"
+);
