@@ -15,6 +15,11 @@ const API_URL = "https://shopeasy-backend-2o2i.onrender.com";
 async function testBackend() {
     try {
         const response = await fetch(API_URL);
+
+        if (!response.ok) {
+            throw new Error("Backend response error");
+        }
+
         const data = await response.json();
 
         console.log("✅ Backend Connected:", data);
@@ -91,12 +96,14 @@ async function loadProducts() {
 
         displayProducts(products);
 
+        console.log("✅ Products Loaded:", products);
+
     } catch (error) {
 
-        productsDiv.innerHTML =
-            "<h2>Error Loading Products</h2>";
+        console.error("❌ Firebase Error:", error);
 
-        console.error("Firebase Error:", error);
+        productsDiv.innerHTML =
+            "<h2>❌ Error Loading Products</h2>";
 
     }
 }
@@ -112,6 +119,14 @@ function displayProducts(productList) {
 
     productsDiv.innerHTML = "";
 
+    if (productList.length === 0) {
+
+        productsDiv.innerHTML =
+            "<h2>No Products Found</h2>";
+
+        return;
+    }
+
     productList.forEach(product => {
 
         productsDiv.innerHTML += `
@@ -120,12 +135,11 @@ function displayProducts(productList) {
 
             <img
                 src="${product.image || ""}"
+                alt="${product.name || "Product"}"
                 onclick="openProduct('${product.id}')"
             >
 
-            <h3
-                onclick="openProduct('${product.id}')"
-            >
+            <h3 onclick="openProduct('${product.id}')">
                 ${product.name || "Product"}
             </h3>
 
@@ -135,9 +149,7 @@ function displayProducts(productList) {
                 ${product.description || ""}
             </p>
 
-            <button
-                onclick="addToCart('${product.id}')"
-            >
+            <button onclick="addToCart('${product.id}')">
                 🛒 Add To Cart
             </button>
 
@@ -162,7 +174,20 @@ function displayProducts(productList) {
 
 function addToCart(id) {
 
-    let item = cart.find(p => p.id === id);
+    const product = products.find(
+        p => p.id === id
+    );
+
+    if (!product) {
+
+        alert("Product not found");
+
+        return;
+    }
+
+    const item = cart.find(
+        p => p.id === id
+    );
 
     if (item) {
 
@@ -170,20 +195,18 @@ function addToCart(id) {
 
     } else {
 
-        let product = products.find(
-            p => p.id === id
-        );
-
-        if (!product) return;
-
         cart.push({
             ...product,
             quantity: 1
         });
+
     }
 
     saveCart();
+
     displayCart();
+
+    alert(product.name + " added to cart 🛒");
 }
 
 
@@ -193,21 +216,21 @@ function addToCart(id) {
 
 function addToWishlist(id) {
 
-    let product = products.find(
+    const product = products.find(
         p => p.id === id
     );
 
     if (!product) return;
 
-    let exist = wishlist.find(
+    const exists = wishlist.find(
         p => p.id === id
     );
 
-    if (exist) {
+    if (exists) {
 
         alert("Already in Wishlist ❤️");
-        return;
 
+        return;
     }
 
     wishlist.push(product);
@@ -239,8 +262,8 @@ function displayCart() {
     cart.forEach(item => {
 
         total +=
-            Number(item.price) *
-            Number(item.quantity);
+            Number(item.price || 0) *
+            Number(item.quantity || 1);
 
         cartDiv.innerHTML += `
 
@@ -249,17 +272,14 @@ function displayCart() {
             <img
                 src="${item.image || ""}"
                 width="70"
+                alt="${item.name || "Product"}"
             >
 
             <div>
 
-                <h3>
-                    ${item.name}
-                </h3>
+                <h3>${item.name}</h3>
 
-                <p>
-                    ₹${item.price}
-                </p>
+                <p>₹${item.price}</p>
 
                 <p>
                     Quantity:
@@ -307,15 +327,18 @@ function displayCart() {
 
 function increaseQty(id) {
 
-    let item = cart.find(
+    const item = cart.find(
         p => p.id === id
     );
 
     if (item) {
+
         item.quantity++;
+
     }
 
     saveCart();
+
     displayCart();
 }
 
@@ -326,7 +349,7 @@ function increaseQty(id) {
 
 function decreaseQty(id) {
 
-    let item = cart.find(
+    const item = cart.find(
         p => p.id === id
     );
 
@@ -339,11 +362,12 @@ function decreaseQty(id) {
     } else {
 
         removeItem(id);
-        return;
 
+        return;
     }
 
     saveCart();
+
     displayCart();
 }
 
@@ -359,6 +383,7 @@ function removeItem(id) {
     );
 
     saveCart();
+
     displayCart();
 }
 
@@ -373,10 +398,12 @@ if (search) {
         "keyup",
         function () {
 
-            let text =
-                this.value.toLowerCase();
+            const text =
+                this.value
+                    .toLowerCase()
+                    .trim();
 
-            let filtered =
+            const filtered =
                 products.filter(product =>
                     (product.name || "")
                         .toLowerCase()
@@ -407,14 +434,13 @@ if (category) {
 
             } else {
 
-                let filtered =
+                const filtered =
                     products.filter(product =>
                         product.category ===
                         this.value
                     );
 
                 displayProducts(filtered);
-
             }
 
         }
@@ -477,13 +503,51 @@ function logout() {
 
 
 // ===============================
+// REFRESH PRODUCTS
+// ===============================
+
+function refreshProducts() {
+
+    if (
+        category &&
+        category.value !== "all"
+    ) {
+
+        const filtered =
+            products.filter(product =>
+                product.category ===
+                category.value
+            );
+
+        displayProducts(filtered);
+
+    } else {
+
+        displayProducts(products);
+
+    }
+}
+
+
+// ===============================
+// REFRESH CART
+// ===============================
+
+function refreshCart() {
+
+    saveCart();
+
+    displayCart();
+}
+
+
+// ===============================
 // RELOAD PRODUCTS
 // ===============================
 
 async function reloadProducts() {
 
     await loadProducts();
-
 }
 
 
@@ -496,6 +560,7 @@ window.addEventListener(
     () => {
 
         loadProducts();
+
         displayCart();
 
     }
@@ -517,8 +582,7 @@ setInterval(
 
 
 // ===============================
-// MAKE FUNCTIONS AVAILABLE
-// TO HTML ONCLICK
+// MAKE FUNCTIONS AVAILABLE TO HTML
 // ===============================
 
 window.openProduct =
@@ -548,11 +612,17 @@ window.openAdminProducts =
 window.logout =
     logout;
 
+window.refreshProducts =
+    refreshProducts;
 
-// ===============================
-// APP STARTED
-// ===============================
+window.refreshCart =
+    refreshCart;
+
 
 console.log(
-    "✅ ShopEasy Frontend Loaded"
+    "✅ ShopEasy Frontend Started"
+);
+console.log(
+    "🔗 Backend URL:",
+    API_URL
 );
