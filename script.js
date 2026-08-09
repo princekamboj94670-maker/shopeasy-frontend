@@ -1,4 +1,18 @@
 import { db } from "./firebase.js";
+const API_URL = "https://shopeasy-backend-2o2i.onrender.com";
+
+async function testBackend() {
+    try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+
+        console.log("✅ Backend Connected:", data);
+    } catch (error) {
+        console.error("❌ Backend Connection Failed:", error);
+    }
+}
+
+testBackend();
 
 import {
   collection,
