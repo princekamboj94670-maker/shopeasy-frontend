@@ -180,3 +180,4 @@ if (form) {
 
 
 console.log("✅ Checkout loaded");
+alert("CHECKOUT JS LOADED ✅");
