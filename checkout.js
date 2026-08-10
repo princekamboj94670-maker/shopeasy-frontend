@@ -232,7 +232,7 @@ async function startRazorpayPayment(
         const options = {
 
             key:
-                "rzp_test_REPLACE_WITH_YOUR_KEY_ID",
+                "rzp_test_rzp_test_TO17Wsc6SU5sye
 
             amount:
                 data.amount,
