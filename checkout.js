@@ -63,6 +63,7 @@ if (form) {
     form.addEventListener("submit", async (e) => {
 
         e.preventDefault();
+        alert("BUTTON WORKING ✅");
 
         const name =
             document.getElementById("name").value.trim();
