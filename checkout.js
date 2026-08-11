@@ -7,8 +7,17 @@ import {
     getDoc
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
+const API_URL =
+    "https://shopeasy-backend-2o2i.onrender.com";
 
-// Profile
+const RAZORPAY_KEY_ID =
+    "rzp_test_TO17Wsc6SU5sye";
+
+
+// =====================================
+// LOAD PROFILE
+// =====================================
+
 auth.onAuthStateChanged(async (user) => {
 
     if (!user) return;
@@ -42,8 +51,12 @@ auth.onAuthStateChanged(async (user) => {
 });
 
 
-// Checkout
-const form = document.getElementById("checkoutForm");
+// =====================================
+// CHECKOUT
+// =====================================
+
+const form =
+    document.getElementById("checkoutForm");
 
 if (form) {
 
@@ -110,66 +123,42 @@ if (form) {
         });
 
 
-        const order = {
+        // =================================
+        // COD
+        // =================================
 
-            name: name,
-            phone: phone,
-            address: address,
-            city: city,
-            pincode: pincode,
-            payment: payment,
-            cart: cart,
+        if (payment === "Cash on Delivery") {
 
-            totalItems: cart.reduce(
-                (sum, item) =>
-                    sum + Number(item.quantity || 1),
-                0
-            ),
-
-            totalAmount: totalAmount,
-
-            status: "Pending",
-
-            date: new Date().toLocaleString()
-
-        };
-
-
-        try {
-
-            const docRef =
-                await addDoc(
-                    collection(db, "orders"),
-                    order
-                );
-
-
-            localStorage.setItem(
-                "lastOrderId",
-                docRef.id
+            await placeOrder(
+                name,
+                phone,
+                address,
+                city,
+                pincode,
+                "Cash on Delivery",
+                cart,
+                totalAmount,
+                ""
             );
 
-            localStorage.removeItem("cart");
+            return;
+        }
 
 
-            alert(
-                "✅ Order Placed Successfully!\n\n" +
-                "Order ID: " +
-                docRef.id
-            );
+        // =================================
+        // UPI
+        // =================================
 
+        if (payment === "UPI") {
 
-            window.location.href =
-                "success.html";
-
-
-        } catch (error) {
-
-            console.error(error);
-
-            alert(
-                "❌ Order Error:\n" +
-                error.message
+            await startRazorpayPayment(
+                name,
+                phone,
+                address,
+                city,
+                pincode,
+                cart,
+                totalAmount
             );
 
         }
@@ -179,5 +168,348 @@ if (form) {
 }
 
 
-console.log("✅ Checkout loaded");
-alert("CHECKOUT JS LOADED ✅");
+// =====================================
+// RAZORPAY
+// =====================================
+
+async function startRazorpayPayment(
+    name,
+    phone,
+    address,
+    city,
+    pincode,
+    cart,
+    totalAmount
+) {
+
+    try {
+
+        const response = await fetch(
+            API_URL +
+            "/api/payment/create-order",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body: JSON.stringify({
+                    amount: totalAmount
+                })
+            }
+        );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            alert(
+                "❌ Unable to create payment order."
+            );
+
+            console.error(data);
+            return;
+        }
+
+
+        const options = {
+
+            key:
+                RAZORPAY_KEY_ID,
+
+            amount:
+                data.amount,
+
+            currency:
+                data.currency,
+
+            name:
+                "ShopEasy",
+
+            description:
+                "ShopEasy Order",
+
+            order_id:
+                data.orderId,
+
+            prefill: {
+
+                name:
+                    name,
+
+                contact:
+                    phone
+
+            },
+
+            theme: {
+
+                color:
+                    "#3399cc"
+
+            },
+
+            handler:
+                async function (
+                    paymentResponse
+                ) {
+
+                    await verifyPayment(
+                        paymentResponse,
+                        name,
+                        phone,
+                        address,
+                        city,
+                        pincode,
+                        cart,
+                        totalAmount
+                    );
+
+                }
+
+        };
+
+
+        const razorpay =
+            new Razorpay(options);
+
+
+        razorpay.on(
+            "payment.failed",
+            function (response) {
+
+                console.error(
+                    "Payment Failed:",
+                    response
+                );
+
+                alert(
+                    "❌ Payment Failed\n" +
+                    (
+                        response.error?.description ||
+                        "Please try again."
+                    )
+                );
+
+            }
+        );
+
+
+        razorpay.open();
+
+
+    } catch (error) {
+
+        console.error(
+            "Razorpay Error:",
+            error
+        );
+
+        alert(
+            "❌ Payment Error:\n" +
+            error.message
+        );
+
+    }
+
+}
+
+
+// =====================================
+// VERIFY PAYMENT
+// =====================================
+
+async function verifyPayment(
+    paymentResponse,
+    name,
+    phone,
+    address,
+    city,
+    pincode,
+    cart,
+    totalAmount
+) {
+
+    try {
+
+        const response =
+            await fetch(
+                API_URL +
+                "/api/payment/verify",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify(
+                            paymentResponse
+                        )
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !result.success
+        ) {
+
+            alert(
+                "❌ Payment verification failed."
+            );
+
+            console.error(result);
+            return;
+        }
+
+
+        await placeOrder(
+            name,
+            phone,
+            address,
+            city,
+            pincode,
+            "UPI",
+            cart,
+            totalAmount,
+            paymentResponse.razorpay_payment_id
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Verification Error:",
+            error
+        );
+
+        alert(
+            "❌ Verification Error:\n" +
+            error.message
+        );
+
+    }
+
+}
+
+
+// =====================================
+// SAVE ORDER
+// =====================================
+
+async function placeOrder(
+    name,
+    phone,
+    address,
+    city,
+    pincode,
+    payment,
+    cart,
+    totalAmount,
+    paymentId
+) {
+
+    try {
+
+        const order = {
+
+            name: name,
+            phone: phone,
+            address: address,
+            city: city,
+            pincode: pincode,
+
+            payment:
+                payment,
+
+            paymentId:
+                paymentId || "",
+
+            cart:
+                cart,
+
+            totalItems:
+                cart.reduce(
+                    (sum, item) =>
+                        sum +
+                        Number(
+                            item.quantity || 1
+                        ),
+                    0
+                ),
+
+            totalAmount:
+                totalAmount,
+
+            status:
+                "Pending",
+
+            date:
+                new Date()
+                    .toLocaleString()
+
+        };
+
+
+        const docRef =
+            await addDoc(
+                collection(
+                    db,
+                    "orders"
+                ),
+                order
+            );
+
+
+        localStorage.setItem(
+            "lastOrderId",
+            docRef.id
+        );
+
+
+        localStorage.removeItem(
+            "cart"
+        );
+
+
+        alert(
+            "✅ Order Placed Successfully!\n\n" +
+            "Order ID: " +
+            docRef.id
+        );
+
+
+        window.location.href =
+            "success.html";
+
+
+    } catch (error) {
+
+        console.error(
+            "Firebase Order Error:",
+            error
+        );
+
+        alert(
+            "❌ Order Error:\n" +
+            error.message
+        );
+
+    }
+
+}
