@@ -16,6 +16,7 @@ const nameInput = document.getElementById("name");
 const priceInput = document.getElementById("price");
 const imageInput = document.getElementById("image");
 const descriptionInput = document.getElementById("description");
+const categoryInput = document.getElementById("category");
 
 document.getElementById("addProduct").addEventListener("click", async () => {
 
@@ -23,6 +24,7 @@ document.getElementById("addProduct").addEventListener("click", async () => {
     const price = Number(priceInput.value);
     const image = imageInput.value.trim();
     const description = descriptionInput.value.trim();
+    const category = categoryInput.value;
 
     if (!name || !price || !image || !description) {
         alert("Please fill all fields.");
@@ -31,21 +33,22 @@ document.getElementById("addProduct").addEventListener("click", async () => {
 
     try {
 
-    await addDoc(collection(db, "products"), {
-        name,
-        price,
-        image,
-        description
-    });
+        await addDoc(collection(db, "products"), {
+            name,
+            price,
+            image,
+            description,
+            category
+        });
 
-    alert("✅ Product Added Successfully!");
+        alert("✅ Product Added Successfully!");
 
-} catch (error) {
+    } catch (error) {
 
-    alert(error.message);
-    console.log(error);
+        alert(error.message);
+        console.log(error);
 
-}
+    }
 
     nameInput.value = "";
     priceInput.value = "";
@@ -56,15 +59,15 @@ document.getElementById("addProduct").addEventListener("click", async () => {
 
 });
 
-async function loadProducts(){
+async function loadProducts() {
 
     productsDiv.innerHTML = "<h2>Loading Products...</h2>";
 
-    const snapshot = await getDocs(collection(db,"products"));
+    const snapshot = await getDocs(collection(db, "products"));
 
     productsDiv.innerHTML = "";
 
-    snapshot.forEach((productDoc)=>{
+    snapshot.forEach((productDoc) => {
 
         const product = productDoc.data();
 
@@ -78,7 +81,10 @@ async function loadProducts(){
             <p>₹${product.price}</p>
 
             <p>${product.description}</p>
-                        <button onclick="editProduct('${productDoc.id}')">
+
+            <p><b>Category:</b> ${product.category || "General"}</p>
+
+            <button onclick="editProduct('${productDoc.id}')">
             ✏️ Edit
             </button>
 
@@ -120,7 +126,8 @@ window.editProduct = async function(id){
         name: newName,
         price: Number(newPrice),
         image: newImage,
-        description: newDescription
+        description: newDescription,
+        category: product.category || "General"
     });
 
     alert("✅ Product Updated Successfully!");
