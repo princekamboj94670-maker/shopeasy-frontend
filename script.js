@@ -479,7 +479,7 @@ function openAdmin() {
 function openAdminProducts() {
 
     window.location.href =
-        "admin-products.html";
+        "Admin-products.html";
 }
 
 
