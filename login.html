@@ -1,20 +1,53 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Login - ShopEasy</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShopEasy Login</title>
+<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<h2>ShopEasy Login</h2>
+<div class="container">
 
-<input type="email" id="email" placeholder="Email"><br><br>
+<button onclick="window.location.href='index.html'"
+style="padding:10px 15px; margin-bottom:15px;">
+⬅ Back to Home
+</button>
 
-<input type="password" id="password" placeholder="Password"><br><br>
+<h1>🔑 Login</h1>
 
-<button onclick="signup()">Sign Up</button>
+<form id="loginForm">
 
-<button onclick="login()">Login</button>
+<input
+type="email"
+id="email"
+placeholder="Enter Email"
+required
+><br><br>
+
+<input
+type="password"
+id="password"
+placeholder="Enter Password"
+required
+><br><br>
+
+<button type="submit">Login</button>
+
+</form>
+
+<br>
+
+<p>
+Don't have an account?
+<a href="signup.html">Signup Here</a>
+</p>
+
+<div id="message"></div>
+
+</div>
 
 <script type="module" src="login.js"></script>
 
