@@ -11,11 +11,31 @@
 
 <div class="container">
 
-<h1>🛍️ ShopEasy</h1>
+<div class="navbar">
+
+<h2>🛒 ShopEasy</h2>
+
+<input type="text" id="search" placeholder="🔍 Search Products...">
+
+<a href="wishlist.html">
+<button>❤️ Wishlist</button>
+</a>
+
+<a href="orders.html">
+<button>📦 Orders</button>
+</a>
+
+<a href="profile.html">
+<button>👤 Profile</button>
+</a>
+
+</div>
+
+<div class="top-buttons">
+
 <button onclick="openAdmin()">👨‍💼 Admin Panel</button>
 
 <button onclick="openAdminProducts()">📦 Admin Products</button>
-<div style="margin-bottom:20px;">
 
 <a href="login.html">
 <button>🔑 Login</button>
@@ -24,28 +44,21 @@
 <a href="signup.html">
 <button>👤 Signup</button>
 </a>
-<a href="profile.html">
-<button>👤 My Profile</button>
-</a>
 
 </div>
 
-<input type="text" id="search" placeholder="🔍 Search Products...">
-<a href="wishlist.html">
-    <button>❤️ Wishlist</button>
-    <a href="profile.html">
-    <button>👤 My Profile</button>
-</a>
-<a href="orders.html">
-    <button>📦 My Orders</button>
-</a>
-</a>
-
 <select id="category">
+
 <option value="all">All Categories</option>
-<option value="Shoes">Shoes</option>
-<option value="Shirt">Shirt</option>
-<option value="Watch">Watch</option>
+
+<option value="mobiles">📱 Mobiles</option>
+
+<option value="laptops">💻 Laptops</option>
+
+<option value="fashion">👕 Fashion</option>
+
+<option value="electronics">🎧 Electronics</option>
+
 </select>
 
 <div id="products"></div>
@@ -55,8 +68,9 @@
 <div id="cart"></div>
 
 <h3 id="total">Total : ₹0</h3>
+
 <a href="checkout.html">
-    <button>Proceed to Checkout</button>
+<button>Proceed to Checkout</button>
 </a>
 
 </div>
