@@ -2,41 +2,50 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Profile</title>
+<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<h1>👤 My Profile</h1>
+<div class="profile-header">
+
+<a href="index.html">
+<button>🏠 Home</button>
+</a>
+
+<h2>👤 My Profile</h2>
+
+</div>
+
+<div class="profile-card">
+
+<div class="profile-avatar">
+👤
+</div>
 
 <h3 id="email"></h3>
 
-<input type="text" id="name" placeholder="Name"><br><br>
+<input type="text" id="name" placeholder="Name">
 
-<input type="text" id="phone" placeholder="Phone"><br><br>
+<input type="text" id="phone" placeholder="Phone">
 
-<input type="text" id="address" placeholder="Address"><br><br>
-<h3>City</h3>
-<input type="text" id="city" placeholder="Enter City">
+<input type="text" id="address" placeholder="Address">
 
-<h3>Pincode</h3>
-<input type="text" id="pincode" placeholder="Enter Pincode">
+<input type="text" id="city" placeholder="City">
 
-<button onclick="saveProfile()">💾 Save Profile</button>
+<input type="text" id="pincode" placeholder="Pincode">
 
-<br><br>
-<h3>Name</h3>
-<input type="text" id="name" placeholder="Enter Name">
+<button onclick="saveProfile()">
+💾 Save Profile
+</button>
 
-<h3>Phone</h3>
-<input type="text" id="phone" placeholder="Enter Phone">
+<button onclick="logout()">
+🚪 Logout
+</button>
 
-<br><br>
-
-<button onclick="saveProfile()">💾 Save Profile</button>
-
-<hr>
-
-<button onclick="logout()">🚪 Logout</button>
+</div>
 
 <script type="module" src="profile.js"></script>
 
