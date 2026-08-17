@@ -8,7 +8,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 const API_URL =
-    "https://shopeasy-backend-1-typo.onrender.com";
+"https://shopeasy-backend-2o2i.onrender.com";
 
 const RAZORPAY_KEY_ID =
     "rzp_test_TO17Wsc6SU5sye";
