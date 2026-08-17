@@ -4,51 +4,140 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ShopEasy</title>
+
 <link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.json">
+
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./service-worker.js");
+}
+</script>
 </head>
 
 <body>
 
-<div class="header">
-    <h1>🛒 ShopEasy</h1>
+<header class="header">
+
+<div class="logo">
+🛒 ShopEasy
 </div>
 
-<div class="top-banner">
-    <div class="brand-btn">🛍 ShopEasy</div>
-    <div class="brand-btn">💰 Value 365</div>
-    <div class="brand-btn">✈ Travel</div>
+<div class="search-container">
+<input
+type="text"
+id="search"
+placeholder="Search Products..."
+>
 </div>
 
-<div class="address-bar">
-📍 Add Delivery Address
+</header>
+
+<div class="banner-slider">
+
+<div class="banner-card">
+🔥 Mega Sale Up To 70% OFF
 </div>
 
-<div class="search-box">
-<input type="text" id="search" placeholder="🔍 Search Products...">
+<div class="banner-card">
+📱 Latest Mobiles Available
 </div>
 
-<div class="categories">
-    <div>👕 Fashion</div>
-    <div>📱 Mobiles</div>
-    <div>💻 Laptops</div>
-    <div>🎧 Electronics</div>
-    <div>💄 Beauty</div>
+<div class="banner-card">
+💻 Laptop Deals
 </div>
 
-<div class="banner">
-<img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200" alt="Banner">
 </div>
 
-<h2 class="section-title">Recommended Products</h2>
+<div class="category-row">
+
+<div class="category-item">📱 Mobiles</div>
+<div class="category-item">💻 Laptops</div>
+<div class="category-item">👕 Fashion</div>
+<div class="category-item">🎧 Electronics</div>
+<div class="category-item">💄 Beauty</div>
+
+</div>
+
+<div class="top-buttons">
+
+<button onclick="openAdmin()">
+👨‍💼 Admin
+</button>
+
+<button onclick="openAdminProducts()">
+📦 Products
+</button>
+
+<a href="login.html">
+<button>
+🔑 Login
+</button>
+</a>
+
+<a href="signup.html">
+<button>
+👤 Signup
+</button>
+</a>
+
+</div>
+
+<select id="category">
+
+<option value="all">All Categories</option>
+
+<option value="mobiles">Mobiles</option>
+
+<option value="laptops">Laptops</option>
+
+<option value="fashion">Fashion</option>
+
+<option value="electronics">Electronics</option>
+
+</select>
+
+<h2 class="section-title">
+⭐ Recommended Products
+</h2>
 
 <div id="products"></div>
 
-<div class="bottom-nav">
-    <a href="index.html">🏠 Home</a>
-    <a href="wishlist.html">❤️ Wishlist</a>
-    <a href="orders.html">📦 Orders</a>
-    <a href="profile.html">👤 Profile</a>
-</div>
+<h2 class="section-title">
+🛒 Shopping Cart
+</h2>
+
+<div id="cart"></div>
+
+<h3 id="total">
+Total : ₹0
+</h3>
+
+<a href="checkout.html">
+<button class="checkout-btn">
+Proceed To Checkout
+</button>
+</a>
+
+<nav class="bottom-nav">
+
+<a href="index.html">
+🏠 Home
+</a>
+
+<a href="wishlist.html">
+❤️ Wishlist
+</a>
+
+<a href="orders.html">
+📦 Orders
+</a>
+
+<a href="profile.html">
+👤 Profile
+</a>
+
+</nav>
 
 <script type="module" src="script.js"></script>
 
