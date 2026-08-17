@@ -28,24 +28,41 @@ async function loadProduct() {
 
     <div class="product-details">
 
-        <img src="${product.image}" width="300">
+<div class="discount-badge">
+🔥 20% OFF
+</div>
 
-        <h2>${product.name}</h2>
+<img src="${product.image}" width="300">
 
-        <h3 style="color:green;">₹${product.price}</h3>
+<h2>${product.name}</h2>
 
-        <p>${product.description}</p>
+<div class="rating">
+⭐⭐⭐⭐⭐ 4.8
+</div>
 
-        <button id="cartBtn">
-        🛒 Add To Cart
-        </button>
+<h3 style="color:green;">
+₹${product.price}
+</h3>
 
-        <button id="buyBtn">
-        ⚡ Buy Now
-        </button>
+<p>${product.description}</p>
 
-    </div>
+<p style="color:#2874f0;">
+🚚 Free Delivery Available
+</p>
 
+<p style="color:#2e7d32;">
+✅ In Stock
+</p>
+
+<button id="cartBtn">
+🛒 Add To Cart
+</button>
+
+<button id="buyBtn">
+⚡ Buy Now
+</button>
+
+</div>
     `;
 
     document.getElementById("cartBtn").onclick = function () {
