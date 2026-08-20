@@ -79,11 +79,12 @@ async function loadProducts() {
 
     try {
 
+        products = [];
+
+        // Firebase Products
         const snapshot = await getDocs(
             collection(db, "products")
         );
-
-        products = [];
 
         snapshot.forEach((productDoc) => {
 
@@ -94,13 +95,36 @@ async function loadProducts() {
 
         });
 
+        // API Products
+        const response = await fetch(
+            "https://dummyjson.com/products?limit=100"
+        );
+
+        const data = await response.json();
+
+        data.products.forEach(product => {
+
+            products.push({
+                id: "api_" + product.id,
+                name: product.title,
+                price: product.price,
+                image: product.thumbnail,
+                description: product.description,
+                category: product.category
+            });
+
+        });
+
         displayProducts(products);
 
-        console.log("✅ Products Loaded:", products);
+        console.log(
+            "✅ Total Products:",
+            products.length
+        );
 
     } catch (error) {
 
-        console.error("❌ Firebase Error:", error);
+        console.error(error);
 
         productsDiv.innerHTML =
             "<h2>❌ Error Loading Products</h2>";
