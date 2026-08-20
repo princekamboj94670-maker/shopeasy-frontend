@@ -601,7 +601,7 @@ setInterval(
         reloadProducts();
 
     },
-    30000
+    300000
 );
 
 
