@@ -649,3 +649,16 @@ console.log(
     "🔗 Backend URL:",
     API_URL
 );
+import { auth } from "./firebase.js";
+
+auth.onAuthStateChanged((user) => {
+    const adminBtn = document.getElementById("adminBtn");
+
+    if (!adminBtn) return;
+
+    if (user && user.email === "princekamboj94670@gmail.com") {
+        adminBtn.style.display = "block";
+    } else {
+        adminBtn.style.display = "none";
+    }
+});
