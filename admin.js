@@ -1,3 +1,20 @@
+import { auth } from "./firebase.js";
+
+auth.onAuthStateChanged((user) => {
+
+    if (!user) {
+        alert("Please Login First");
+        window.location.href = "login.html";
+        return;
+    }
+
+    if (user.email !== "princekamboj94670@gmail.com") {
+        alert("Access Denied");
+        window.location.href = "index.html";
+        return;
+    }
+
+});
 import { db } from "./firebase.js";
 
 import {
