@@ -24,6 +24,7 @@ import {
   collection,
   getDocs,
   deleteDoc,
+  updateDoc,
   doc
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
@@ -94,9 +95,26 @@ async function loadOrders() {
 
             <p><b>Payment:</b> ${order.payment}</p>
 
-            <p><b>Date:</b> ${order.date}</p>
+<p><b>Date:</b> ${order.date}</p>
 
-            <h3>Products</h3>
+<p>
+<b>Status:</b>
+
+<select onchange="updateStatus('${orderDoc.id}', this.value)">
+
+<option value="Pending" ${order.status=="Pending"?"selected":""}>Pending</option>
+
+<option value="Packed" ${order.status=="Packed"?"selected":""}>Packed</option>
+
+<option value="Shipped" ${order.status=="Shipped"?"selected":""}>Shipped</option>
+
+<option value="Delivered" ${order.status=="Delivered"?"selected":""}>Delivered</option>
+
+</select>
+
+</p>
+
+<h3>Products</h3>
 
             <ul>
             ${cartItems}
@@ -121,7 +139,16 @@ async function loadOrders() {
     }
 
 }
+window.updateStatus = async function(id,status){
 
+    await updateDoc(
+        doc(db,"orders",id),
+        { status: status }
+    );
+
+    alert("Status Updated");
+
+}
 window.deleteOrder = async function(id){
 
     if(confirm("Delete this order?")){
