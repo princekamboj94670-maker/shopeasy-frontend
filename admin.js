@@ -14,6 +14,9 @@ auth.onAuthStateChanged((user) => {
         return;
     }
 
+    // Sirf admin hi orders load karega
+    loadOrders();
+
 });
 import { db } from "./firebase.js";
 
@@ -133,4 +136,4 @@ window.deleteOrder = async function(id){
 
 }
 
-loadOrders();
+
